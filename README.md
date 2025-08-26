@@ -16,20 +16,11 @@ This is a frontend assessment project built using **React 19 with vite** and **T
 3. Vite - for fast development build
 4. Vercel - for deployment
 
-## 📝 Notes / Assumptions
-
-If APIs were provided, I would have tested them using Postman and integrated them more efficiently.
-
-The UI and logic were developed assuming typical expected behavior from a frontend assessment.
-
-No backend integration or mock data source was included unless explicitly required.
-
 ## ⏱ Time Spent
 The total time spent completing this assessment: 6 hours
 
 ## For Login
-1. email:omais@gmail.com
+1. email:test@example.com
 2. password:123
 
-## For Live Demo Visit
- https://tick-tock-app.vercel.app
+ 
