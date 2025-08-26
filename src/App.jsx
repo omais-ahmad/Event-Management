@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AppLayout } from "./components/AppLayout";
 import { Dashboard } from "./pages/Dashboard";
-import { EventDetails } from "./pages/EventDetails";
+import EventDetailsRoute from "./pages/EventDetailsRoute";
 import "./App.css";
 
 const router = createBrowserRouter([
@@ -18,7 +18,7 @@ const router = createBrowserRouter([
           },
           {
             path: "details/:id",
-            element: <EventDetails />,
+            element: <EventDetailsRoute />,
           },
         ],
       },

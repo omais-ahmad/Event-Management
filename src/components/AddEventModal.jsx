@@ -1,123 +1,123 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { createEvent } from "../utils/api";
+import { DateTime } from "luxon";
 
-export const AddEventModal = ({ isOpen, onClose, entry, onAdd }) => {
-  const [project, setProject] = useState("");
-  const [typeOfWork, setTypeOfWork] = useState("Bug fixes");
+export default function AddEventModal({
+  isOpen,
+  onClose,
+  onCreated,
+  onNotify,
+}) {
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [hours, setHours] = useState(12);
-
-  useEffect(() => {
-    if (isOpen && entry) {
-      setProject("");
-      setTypeOfWork("Bug fixes");
-      setDescription("");
-      setHours(12);
-    }
-  }, [isOpen, entry]);
-
-  const handleAddEntry = () => {
-    const newData = { project, typeOfWork, description, hours };
-    onAdd(newData);
-    onClose();
-  };
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [timezone, setTimezone] = useState(
+    Intl.DateTimeFormat().resolvedOptions().timeZone
+  );
+  const [image, setImage] = useState(null);
 
   if (!isOpen) return null;
 
+  async function handleSubmit(e) {
+    e.preventDefault();
+    try {
+      const dt = DateTime.fromISO(`${date}T${time}`, { zone: timezone });
+      const utcDate = dt.toUTC().toISO();
+
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("description", description);
+      formData.append("date", utcDate);
+      formData.append("timezone", timezone);
+      if (image) formData.append("image", image);
+
+      await createEvent(formData);
+
+      onNotify("Event created successfully");
+      onCreated();
+      onClose();
+    } catch {
+      onNotify("Error creating event");
+    }
+  }
+
   return (
-    <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 md:w-[646px]">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold text-[#111928]">
-            Add New Entry
-          </h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-black">
-            &times;
-          </button>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded-lg w-[400px] space-y-3"
+      >
+        <h2 className="font-semibold text-lg">Create Event</h2>
+
+        <input
+          type="text"
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="border p-2 w-full rounded"
+          required
+        />
+
+        <textarea
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="border p-2 w-full rounded"
+        />
+
+        <div className="flex gap-2">
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="border p-2 rounded flex-1"
+            required
+          />
+          <input
+            type="time"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            className="border p-2 rounded flex-1"
+            required
+          />
         </div>
 
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1 text-[#111928]">
-              Select Project *
-            </label>
-            <select
-              className="w-full border border-gray-300 text-sm rounded-lg px-3 py-2 text-gray-500 font-normal"
-              value={project}
-              onChange={(e) => setProject(e.target.value)}
-            >
-              <option value="">Project Name</option>
-              <option value="Project A">Project A</option>
-              <option value="Project B">Project B</option>
-            </select>
-          </div>
+        <select
+          value={timezone}
+          onChange={(e) => setTimezone(e.target.value)}
+          className="border p-2 w-full rounded"
+        >
+          {Intl.supportedValuesOf("timeZone").map((tz) => (
+            <option key={tz} value={tz}>
+              {tz}
+            </option>
+          ))}
+        </select>
 
-          <div>
-            <label className="block text-sm font-medium mb-1 text-[#111928]">
-              Type of Work *
-            </label>
-            <select
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-500 text-sm font-normal"
-              value={typeOfWork}
-              onChange={(e) => setTypeOfWork(e.target.value)}
-            >
-              <option value="Bug fixes">Bug fixes</option>
-              <option value="Feature development">Feature development</option>
-              <option value="Code review">Code review</option>
-            </select>
-          </div>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setImage(e.target.files[0])}
+          className="border p-2 w-full rounded"
+        />
 
-          <div>
-            <label className="block text-sm font-medium mb-1 text-[#111928]">
-              Task description *
-            </label>
-            <textarea
-              className="w-full border border-gray-300 rounded-lg  px-3 py-2 max-h-24 text-gray-500 text-sm font-normal "
-              placeholder="Write text here ..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-            <p className="text-xs text-gray-400 mt-1">A note for extra info</p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1 text-[#111928]">
-              Hours *
-            </label>
-            <div className="flex items-center space-x-2 border border-gray-300 rounded-lg w-fit">
-              <button
-                className="px-2 py-1 bg-gray-100 rounded-l-lg border border-gray-300"
-                onClick={() => setHours((prev) => Math.max(0, prev - 1))}
-              >
-                –
-              </button>
-              <span className="px-3 text-gray-500 text-sm font-normal">
-                {hours}
-              </span>
-              <button
-                className="px-2 py-1 bg-gray-100 border border-gray-300 rounded-r-lg"
-                onClick={() => setHours((prev) => prev + 1)}
-              >
-                +
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center mt-6 space-x-2">
+        <div className="flex justify-end gap-2">
           <button
-            onClick={handleAddEntry}
-            className="w-1/2 bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-medium hover:bg-blue-700"
-          >
-            Add entry
-          </button>
-          <button
+            type="button"
             onClick={onClose}
-            className="w-1/2 bg-white px-4 py-2 rounded-lg border border-gray-200 text-gray-900 text-xs font-medium hover:bg-gray-200"
+            className="px-4 py-2 border rounded"
           >
             Cancel
           </button>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-600 text-white rounded"
+          >
+            Save
+          </button>
         </div>
-      </div>
+      </form>
     </div>
   );
-};
+}
