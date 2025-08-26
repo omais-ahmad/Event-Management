@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createEvent } from "../utils/api";
+import { createEvent, getToken } from "../utils/api";
 import { DateTime } from "luxon";
 
 export default function AddEventModal({
@@ -18,6 +18,7 @@ export default function AddEventModal({
   const [image, setImage] = useState(null);
 
   if (!isOpen) return null;
+  const authed = Boolean(getToken());
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -49,6 +50,11 @@ export default function AddEventModal({
         className="bg-white p-6 rounded-lg w-[400px] space-y-3"
       >
         <h2 className="font-semibold text-lg">Create Event</h2>
+        {!authed && (
+          <div className="text-sm text-red-700 bg-red-50 border border-red-200 p-2 rounded">
+            You must be logged in to create events.
+          </div>
+        )}
 
         <input
           type="text"
@@ -112,7 +118,8 @@ export default function AddEventModal({
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded"
+            disabled={!authed}
+            className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
           >
             Save
           </button>

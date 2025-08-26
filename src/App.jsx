@@ -2,6 +2,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AppLayout } from "./components/AppLayout";
 import { Dashboard } from "./pages/Dashboard";
 import EventDetailsRoute from "./pages/EventDetailsRoute";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import RequireAuth from "./components/RequireAuth";
 import "./App.css";
 
 const router = createBrowserRouter([
@@ -14,16 +17,26 @@ const router = createBrowserRouter([
         children: [
           {
             path: "",
-            element: <Dashboard />,
+            element: (
+              <RequireAuth>
+                <Dashboard />
+              </RequireAuth>
+            ),
           },
           {
             path: "details/:id",
-            element: <EventDetailsRoute />,
+            element: (
+              <RequireAuth>
+                <EventDetailsRoute />
+              </RequireAuth>
+            ),
           },
         ],
       },
     ],
   },
+  { path: "/login", element: <Login /> },
+  { path: "/register", element: <Register /> },
 ]);
 
 const App = () => {

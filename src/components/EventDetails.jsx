@@ -8,8 +8,8 @@ export default function EventDetails({ event }) {
     .toFormat("ff");
 
   return (
-    <div className="p-4 border rounded-lg mt-4">
-      <h3 className="font-bold text-lg mb-2">{event.title}</h3>
+    <div className="p-4 max-w-5xl mx-auto mt-8 bg-white p-6 rounded-md shadow">
+      <h3 className="font-bold text-lg mb-2">Event: {event.title}</h3>
       <p>{event.description}</p>
       <p>
         <strong>When:</strong> {localTime} ({event.timezone})
